@@ -1,0 +1,9 @@
+# Lista de librerías disponibles en este proyecto
+# Puedes descomentar las que necesites o agregar nuevas líneas con el formato:
+# nombre-paquete==versión
+
+# Ejemplos comunes (ajusta según tu entorno real):
+# flask==2.3.3
+# sqlalchemy==2.0.21
+# pandas==2.1.1
+# requests==2.31.0
