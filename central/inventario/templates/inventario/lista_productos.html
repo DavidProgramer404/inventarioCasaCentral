@@ -16,7 +16,10 @@
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
     <div class="container">
       <a class="navbar-brand fw-semibold" href="{% url 'lista_productos' %}">Casa Central</a>
-      <div class="ms-auto">
+      <div class="ms-auto d-flex gap-2">
+        <a href="{% url 'lista_llegadas' %}" class="btn btn-light btn-sm">📥 Llegadas</a>
+        <a href="{% url 'lista_salidas' %}" class="btn btn-light btn-sm">📤 Salidas</a>
+        <a href="{% url 'inventario_stock' %}" class="btn btn-outline-light btn-sm">📦 Inventario</a>
         <a href="{% url 'nuevo_producto' %}" class="btn btn-light btn-sm">➕ Agregar Producto</a>
       </div>
     </div>
@@ -25,7 +28,16 @@
   <main class="container py-4">
     <div class="card shadow-sm">
       <div class="card-header bg-white d-flex justify-content-between align-items-center">
-        <h1 class="h5 mb-0">📦 Inventario de Productos</h1>
+        <h1 class="h5 mb-0">{% if page_title %}{{ page_title }}{% else %}📦 Inventario de Productos{% endif %}</h1>
+        <div class="d-flex align-items-center gap-2">
+          {% if section == 'llegadas' %}
+            <a href="{% url 'nueva_llegada' %}" class="btn btn-success btn-sm">➕ Registrar llegada</a>
+          {% elif section == 'salidas' %}
+            <span class="text-muted small">Seleccione un producto para registrar salida</span>
+          {% elif section == 'inventario' %}
+            <a href="{% url 'nuevo_producto' %}" class="btn btn-success btn-sm">➕ Agregar al inventario</a>
+          {% endif %}
+        </div>
         <form class="row g-2 align-items-center" method="get" action="">
           <div class="col-auto">
             <input type="search" name="q" value="{{ q }}" class="form-control form-control-sm" placeholder="Buscar por nombre, serial, modelo...">
@@ -83,7 +95,12 @@
               {% for p in page_obj %}
               <tr>
                 <td class="text-center fw-semibold">{{ p.id }}</td>
-                <td class="fw-semibold">{{ p.nombre }}</td>
+                <td class="fw-semibold">
+                  {{ p.nombre }}
+                  {% if section == 'salidas' and p.fecha_entrega %}
+                    <br><span class="badge text-bg-light">Entregado el {{ p.fecha_entrega }}</span>
+                  {% endif %}
+                </td>
                 <td class="text-center">
                   {% if p.categoria == 'MON' %}
                     <span class="badge text-bg-info">Monitores</span>
@@ -115,6 +132,21 @@
                   {% endif %}
                 </td>
               </tr>
+              {% if section == 'llegadas' %}
+              <tr>
+                <td colspan="6" class="text-end">
+                  <a href="{% url 'registrar_salida' p.id %}" class="btn btn-outline-primary btn-sm">Registrar salida</a>
+                </td>
+              </tr>
+              {% elif section == 'salidas' %}
+              <tr>
+                <td colspan="6" class="text-end">
+                  <a href="{% url 'detalle_salida' p.id %}" class="btn btn-outline-secondary btn-sm">Ver</a>
+                  <a href="{% url 'editar_salida' p.id %}" class="btn btn-warning btn-sm">Editar</a>
+                  <a href="{% url 'eliminar_salida' p.id %}" class="btn btn-danger btn-sm">Eliminar</a>
+                </td>
+              </tr>
+              {% endif %}
               {% empty %}
               <tr>
                 <td colspan="6" class="text-center text-muted py-4">No hay productos registrados aún.</td>
